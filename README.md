@@ -3,29 +3,33 @@ layout: blog_post
 title: "Build a Simple CRUD App with Go and Angular"
 author: a_soldatenko
 description: "This tutorial explains how to build a modern CRUD application with a Go as backend and an Angular frontend."
-tags: [go, angular, crud]
+tags: [go, angular, crud, okta, jwt, gin]
 ---
 
 # Build a Simple CRUD App with Go and Angular
 
 ## Instead of introduction
 
-Go was invented in 2009 as a replacement of C by Robert Griesemer, Rob Pike, and Ken Thompson to solve system
-programming real problems. Nowadays we can see huge amount of usage of Go in web, cloud native and even web for client
-[WebAssembly](https://github.com/golang/go/wiki/WebAssembly#introduction).
-But today I would like to share experience how to build modern blog application, where you
-can create, read, update and delete blog posts.
+Go was invented in 2009 as a replacement of C by Robert Griesemer, Rob Pike, and Ken Thompson to solve system programming real problems. Nowadays we can see huge amount of usage of Go in web, cloud native and even web for client [WebAssembly](https://github.com/golang/go/wiki/WebAssembly#introduction). But today I would like to share experience how to build modern blog application, where you can create, read, update and delete blog posts.
+
+## Project technologies and tools
+- go 1.11
+- sqlite
+- angularjs 7
+- gin
+- jwt
+- okta
 
 ## CRUD acronym
 
 CRUD refer to SQL equivalents:
 
-| Action        | SQL statement | HTTP Verb | URL Path    |
-| ------------- |---------------| ----------|-------------|
-| Create        | INSERT        | POST      | /posts      |
-| Read          | SELECT        | GET       | /posts      |
-| Update        | UPDATE        | PUT       | /post/<id>  |
-| Delete        | DELETE        | DELETE    | /post/<id>  |
+| Action        | SQL statement | HTTP Verb | URL Path       |
+| ------------- |---------------| ----------|----------------|
+| Create        | INSERT        | POST      | /api/posts      |
+| Read          | SELECT        | GET       | /api/posts/:id |
+| Update        | UPDATE        | PUT       | /api/post/:id   |
+| Delete        | DELETE        | DELETE    | /api/post/:id  |
 
 
 ## Dependency management in Go
