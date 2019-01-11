@@ -19,6 +19,7 @@ can create, read, update and delete blog posts.
 ## CRUD acronym
 
 CRUD refer to SQL equivalents:
+
 | Action        | SQL statement | HTTP Verb | URL Path    |
 | ------------- |---------------| ----------|-------------|
 | Create        | INSERT        | POST      | /posts      |
@@ -29,7 +30,7 @@ CRUD refer to SQL equivalents:
 
 ## Dependency management in Go
 
-Today is't complicated to imagine modern web application without any dependency. BTW it's huge holy war in Go community
+Today is't complicated to imagine modern web application without any dependency. By the way it's huge holy war in Go community
 about package management and especially compare to Rust community. But I'm nit going to start discussing it here, I just
 show you latest available in Go 1.11 [go modules](https://github.com/golang/go/wiki/Modules) from box which was proposed
 in [Proposal: Versioned Go Modules](https://go.googlesource.com/proposal/+/master/design/24301-versioned-go.md)
@@ -53,8 +54,8 @@ go version go1.11.4 darwin/amd64
 
 ```bash
 cd $HOME/work/
-tree -L 3 go-blog
-go-blog
+tree -L 3 go-blog-ng
+go-blog-ng
 ├── go.mod
 └── main.go
 ```
@@ -192,4 +193,29 @@ Angular CLI is command line tool which can do all job for you: such as: ...
 ```
 $ mkdir frontend && cd frontend
 npm install -g @angular/cli
+```
+
+https://angular.io/tutorial/toh-pt1
+
+
+
+## Migrate DB
+
+```
+go-blog-ng git:(master) ✗ go run main.go
+
+(/Users/andrii/work/go-blog-ng-private/posts/models.go:17)
+[2019-01-10 20:50:21]  [2.81ms]  CREATE TABLE "post_models" ("id" integer primary key autoincrement,"created_at" datetime,"updated_at" datetime,"deleted_at" datetime,"title" varchar(255),"description" varchar(2048),"body" varchar(2048),"author_id" integer )
+[0 rows affected or returned ]
+
+(/Users/andrii/work/go-blog-ng-private/posts/models.go:17)
+[2019-01-10 20:50:21]  [0.86ms]  CREATE INDEX idx_post_models_deleted_at ON "post_models"(deleted_at)
+[0 rows affected or returned ]
+[GIN-debug] [WARNING] Now Gin requires Go 1.6 or later and Go 1.7 will be required soon.
+
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
 ```

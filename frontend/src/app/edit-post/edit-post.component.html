@@ -1,0 +1,58 @@
+<button mat-button
+  (click)="goBack()"
+  class="back-btn">Go Back</button>
+
+<mat-card class="post-form" *ngIf="post">
+  <form #postForm="ngForm" (ngSubmit)="savePost()">
+
+    <mat-card-header>
+      <mat-card-title>{{post.id ? 'Edit post' : 'Add post'}}</mat-card-title>
+      <mat-card-subtitle>{{post.id ? 'edit the existing post' : 'create a new post'}}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-content>
+
+      <mat-form-field>
+        <input matInput
+          placeholder="Post title"
+          [(ngModel)]="post.title"
+          name="title"
+          #title
+          required>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput
+          placeholder="Post description"
+          [(ngModel)]="post.description"
+          name="description"
+          #description
+          required>
+      </mat-form-field>
+
+      <mat-form-field>
+        <textarea matInput
+          matTextareaAutosize
+          matAutosizeMinRows="5"
+          matAutosizeMaxRows="10"
+          placeholder="Post body"
+          [(ngModel)]="post.body"
+          name="body"
+          #body
+          required>
+        </textarea>
+      </mat-form-field>
+
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button  mat-button
+        (click)="savePost()"
+        [disabled]="postForm.invalid">SAVE</button>
+    </mat-card-actions>
+
+  </form>
+</mat-card>
+

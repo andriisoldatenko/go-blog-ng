@@ -1,0 +1,13 @@
+<mat-toolbar color="primary">
+  <a class="logo-link" routerLink="/">
+    Go Blog App
+  </a>
+  <button *ngIf="isAuthenticated"
+    (click)="logout()"
+    mat-button
+    class="login-btn">LOGOUT</button>
+</mat-toolbar>
+
+<div class="container">
+  <router-outlet></router-outlet>
+</div>

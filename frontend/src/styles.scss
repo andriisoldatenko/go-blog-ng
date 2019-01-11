@@ -1,0 +1,25 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin: 30px auto;
+
+  @media screen and (max-width: 1000px) {
+    max-width: 600px;
+  }
+}
+
+mat-card .mat-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0;
+}

@@ -1,0 +1,11 @@
+.back-btn {
+  margin-bottom: 15px;
+}
+
+.post-form {
+  form mat-card-content {
+    display: flex;
+    flex-direction: column;
+    margin: 30px 0;
+  }
+}
