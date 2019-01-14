@@ -10,6 +10,8 @@ type PostSerializer struct {
 type PostResponse struct {
 	ID             uint                  `json:"id"`
 	Title          string                `json:"title"`
+	Description    string                `json:"description"`
+	Body           string                `json:"body"`
 }
 
 type PostsSerializer struct {
@@ -21,6 +23,8 @@ func (s *PostSerializer) Response() PostResponse {
 	response := PostResponse{
 		ID:          s.ID,
 		Title:       s.Title,
+		Description: s.Description,
+		Body:        s.Body,
 	}
 	return response
 }

@@ -10,26 +10,22 @@ tags: [go, angular, crud, okta, jwt, gin]
 
 ## Instead of introduction
 
-Go was invented in 2009 as a replacement of C by Robert Griesemer, Rob Pike, and Ken Thompson to solve system programming real problems. Nowadays we can see huge amount of usage of Go in web, cloud native and even web for client [WebAssembly](https://github.com/golang/go/wiki/WebAssembly#introduction). But today I would like to share experience how to build modern blog application, where you can create, read, update and delete blog posts.
-
-## Project technologies and tools
-- go 1.11
-- sqlite
-- angularjs 7
-- gin
-- jwt
-- okta
+Go was invented in 2009 as a replacement of C by Robert Griesemer, Rob Pike, and Ken Thompson to solve system
+programming real problems. Nowadays we can see huge amount of usage of Go in web, cloud native and even web for client
+[WebAssembly](https://github.com/golang/go/wiki/WebAssembly#introduction).
+But today I would like to share experience how to build modern blog application, where you
+can create, read, update and delete blog posts.
 
 ## CRUD acronym
 
 CRUD refer to SQL equivalents:
 
-| Action        | SQL statement | HTTP Verb | URL Path       |
-| ------------- |---------------| ----------|----------------|
-| Create        | INSERT        | POST      | /api/posts      |
-| Read          | SELECT        | GET       | /api/posts/:id |
-| Update        | UPDATE        | PUT       | /api/post/:id   |
-| Delete        | DELETE        | DELETE    | /api/post/:id  |
+| Action        | SQL statement | HTTP Verb | URL Path    |
+| ------------- |---------------| ----------|-------------|
+| Create        | INSERT        | POST      | /posts      |
+| Read          | SELECT        | GET       | /posts      |
+| Update        | UPDATE        | PUT       | /post/<id>  |
+| Delete        | DELETE        | DELETE    | /post/<id>  |
 
 
 ## Dependency management in Go
@@ -208,11 +204,11 @@ https://angular.io/tutorial/toh-pt1
 ```
 go-blog-ng git:(master) ✗ go run main.go
 
-(/Users/andrii/work/go-blog-ng-private/posts/models.go:17)
+(/Users/andrii/work/go-blog-ng/posts/models.go:17)
 [2019-01-10 20:50:21]  [2.81ms]  CREATE TABLE "post_models" ("id" integer primary key autoincrement,"created_at" datetime,"updated_at" datetime,"deleted_at" datetime,"title" varchar(255),"description" varchar(2048),"body" varchar(2048),"author_id" integer )
 [0 rows affected or returned ]
 
-(/Users/andrii/work/go-blog-ng-private/posts/models.go:17)
+(/Users/andrii/work/go-blog-ng/posts/models.go:17)
 [2019-01-10 20:50:21]  [0.86ms]  CREATE INDEX idx_post_models_deleted_at ON "post_models"(deleted_at)
 [0 rows affected or returned ]
 [GIN-debug] [WARNING] Now Gin requires Go 1.6 or later and Go 1.7 will be required soon.

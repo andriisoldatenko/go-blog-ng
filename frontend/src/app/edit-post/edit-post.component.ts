@@ -33,7 +33,13 @@ export class EditPostComponent implements OnInit {
     this.oktaAuth.getUser().then(data => this.userEmail = data['email']);
 
     if (this.regex.test(this.router.url)) {
-      this.getNewPost();
+      this.post = {
+        id: null,
+        title: '',
+        body: '',
+        description: '',
+        user_email: ''
+      };
     } else {
       this.route.params
         .subscribe(
@@ -41,20 +47,6 @@ export class EditPostComponent implements OnInit {
           err => console.log(err)
         );
     }
-  }
-
-  private getNewPost() {
-    this.postService.getPosts()
-      .subscribe(data => {
-        this.posts = data['posts'];
-        this.post = {
-          id: null,
-          title: '',
-          body: '',
-          description: '',
-          user_email: ''
-        };
-      });
   }
 
   private getPost(postId: number) {
@@ -66,15 +58,9 @@ export class EditPostComponent implements OnInit {
     this.location.back();
   }
 
-  private getMaxId(posts) {
-    return posts ? posts.reduce((p1, p2) => (p1 > p2) ? p1 : p2).id : 0;
-  }
-
   private savePost() {
     if (this.post.id === null) {
-      const maxId = this.getMaxId(this.posts);
       const post = {
-        id: maxId + 1,
         title: this.post.title,
         body: this.post.body,
         description: this.post.description,

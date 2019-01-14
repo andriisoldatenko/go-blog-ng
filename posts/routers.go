@@ -16,13 +16,13 @@ func PostsRegister(router *gin.RouterGroup) {
 }
 
 func PostList(c *gin.Context) {
-	authorEmail := "andrii.soldatenko@gmail.com"
-	postModels, err := FindManyPost(authorEmail)
+	authorEmail, _ := c.Get("user_email")
+	articleModels, err := FindManyPost(authorEmail.(string))
 	if err != nil {
 		c.JSON(http.StatusNotFound, NewError("posts", errors.New("invalid param")))
 		return
 	}
-	serializer := PostsSerializer{c, postModels}
+	serializer := PostsSerializer{c, articleModels}
 	c.JSON(http.StatusOK, gin.H{"posts": serializer.Response()})
 }
 
@@ -38,17 +38,17 @@ func PostRetrieve(c *gin.Context) {
 }
 
 func PostCreate(c *gin.Context) {
-	postModelValidator := NewPostModelValidator()
-	if err := postModelValidator.Bind(c); err != nil {
+	articleModelValidator := NewPostModelValidator()
+	if err := articleModelValidator.Bind(c); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, NewValidatorError(err))
 		return
 	}
-	if err := SaveOne(&postModelValidator.postModel); err != nil {
+	if err := SaveOne(&articleModelValidator.postModel); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, NewError("database", err))
 		return
 	}
-	serializer := PostSerializer{c, postModelValidator.postModel}
-	c.JSON(http.StatusCreated, gin.H{"post": serializer.Response()})
+	serializer := PostSerializer{c, articleModelValidator.postModel}
+	c.JSON(http.StatusCreated, gin.H{"article": serializer.Response()})
 }
 
 func PostUpdate(c *gin.Context) {
@@ -60,7 +60,7 @@ func PostUpdate(c *gin.Context) {
 		return
 	}
 
-	postModelValidator := NewPostModelValidatorFillWith(postModel)
+	postModelValidator := NewArticleModelValidatorFillWith(postModel)
 	if err := postModelValidator.Bind(c); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, NewValidatorError(err))
 		return
@@ -79,8 +79,8 @@ func PostDelete(c *gin.Context) {
 	id, _:= strconv.ParseUint(c.Param("id"), 10, 32)
 	err := DeletePostModel(&PostModel{ID: uint(id)})
 	if err != nil {
-		c.JSON(http.StatusNotFound, NewError("posts", errors.New("invalid id")))
+		c.JSON(http.StatusNotFound, NewError("articles", errors.New("invalid id")))
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"post": "Delete success"})
+	c.JSON(http.StatusOK, gin.H{"article": "Delete success"})
 }

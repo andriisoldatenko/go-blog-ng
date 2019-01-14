@@ -30,13 +30,5 @@ func main() {
 		})
 	})
 
-	tx1 := db.Begin()
-	post1 := posts.PostModel{
-		Title: "AAAAAAAAAAAAAAAA",
-		Description:  "2018",
-		UserEmail:  "andrii.soldatenko@gmail.com",
-	}
-	tx1.Save(&post1)
-	tx1.Commit()
 	r.Run()
 }

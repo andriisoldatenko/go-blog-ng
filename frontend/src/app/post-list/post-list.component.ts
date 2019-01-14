@@ -34,6 +34,8 @@ export class PostListComponent implements OnInit {
 
   private deletePost(postId: number) {
     this.postService.deletePost(postId)
-      .subscribe(() => console.log(`Post with ID: ${postId} has deleted!`));
+      .subscribe(() => {
+        this.posts = this.posts.filter(post => post.id !== postId);
+      });
   }
 }

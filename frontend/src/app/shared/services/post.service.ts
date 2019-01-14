@@ -25,7 +25,7 @@ export class PostService {
 
   /** POST: add a new post to the server */
   public addPost(post: IPost): Observable<any> {
-    return this.http.post<IPost>(`${this.apiUrl}/posts`, post);
+    return this.http.post<IPost>(`${this.apiUrl}/posts`, {post});
   }
 
   /** PUT: update the post on the server */

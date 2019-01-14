@@ -18,6 +18,13 @@ import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import oktaConfig from './okta.config';
 
+const config = Object.assign({
+  onAuthRequired: ({oktaAuth, router}) => {
+    // Redirect the user to your custom login page
+    router.navigate(['/login']);
+  }
+}, oktaConfig);
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -33,7 +40,7 @@ import oktaConfig from './okta.config';
     FormsModule,
     BrowserAnimationsModule,
     MaterialModule,
-    OktaAuthModule.initAuth(oktaConfig)
+    OktaAuthModule.initAuth(config)
   ],
   providers: [
     {
