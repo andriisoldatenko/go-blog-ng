@@ -553,10 +553,292 @@ func GetDB() *gorm.DB {
 
 Angular CLI is command line tool which can do all job for you: such as: ...
 
-```
+```bash
 $ mkdir frontend && cd frontend
-npm install -g @angular/cli
+$ npm install -g @angular/cli
 ```
 
-If you are not familar with Angular I higly recommend this tutorial https://angular.io/tutorial/toh-pt1.
+> Note: If you are not familar with Angular I higly recommend this tutorial https://angular.io/tutorial/toh-pt1.
 
+## Create a new app:
+
+```bash
+$ ng new application-name
+```
+
+## Install Angular Material, Angular CDK:
+
+```bash
+$ npm install --save @angular/material @angular/cdk
+```
+
+## Create a separate NgModule that imports all of the Angular Material components that you will use in your application
+
+```js
+// app/material.ts
+
+import {MatButtonModule, MatCheckboxModule} from '@angular/material';
+
+@NgModule({
+  imports: [MatButtonModule, MatCheckboxModule],
+  exports: [MatButtonModule, MatCheckboxModule],
+})
+export class MyOwnCustomMaterialModule { }
+```
+
+## Include a material theme. Add this to your styles.css:
+
+```css
+/* src/styles.scss */
+
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+```
+
+
+## Install Okta Angular SDK and Okta Sign-In Widget packeges from npm:
+```bash
+npm install --save @okta/okta-angular @okta/okta-signin-widget
+```
+
+## Create a config with the settings for app (for example - okta.config.ts).
+
+- **issuer** (required): The OpenID Connect issuer.
+- **clientId** (required): The OpenID Connect client_id.
+- **redirectUri** (required): Where the callback is hosted
+
+```js
+// app/okta.config.ts
+
+export default {
+issuer: 'https://{yourOktaDomain}/oauth2/default',
+clientId: '{clientId}',
+redirectUri: 'http://localhost:{port}/implicit/callback'
+};
+```
+
+## Initialize and import the OktaAuthModule in app.module.ts:
+
+```js
+// app/app.module.ts
+
+import { OktaAuthModule } from '@okta/okta-angular';
+import oktaConfig from './okta.config';
+
+@NgModule({
+imports: [
+  ...
+  OktaAuthModule.initAuth(oktaConfig)
+],
+})
+export class AppModule { }
+```
+
+## Add a new route for the redirectUri in `app/app-routing.module.ts`:
+
+```js
+// app/app-routing.module.ts
+...
+import { OktaCallbackComponent } from '@okta/okta-angular';
+
+const routes: Routes = [
+...
+{path: 'implicit/callback', component: OktaCallbackComponent},
+...
+];
+```
+
+## Create an AuthInterceptor to add a bearer token to HTTP requests:
+
+```js
+// app/shared/services/auth.interceptor.service.ts
+
+import {
+HttpRequest,
+HttpHandler,
+HttpEvent,
+HttpInterceptor
+} from '@angular/common/http';
+import { Observable, from } from 'rxjs';
+import { OktaAuthService } from '@okta/okta-angular';
+
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+
+constructor(private oktaAuth: OktaAuthService) {
+}
+
+intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  return from(this.handleAccess(request, next));
+}
+
+private async handleAccess(request: HttpRequest<any>, next: HttpHandler): Promise<HttpEvent<any>> {
+    const accessToken = await this.oktaAuth.getAccessToken();
+    request = request.clone({
+      setHeaders: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+    return next.handle(request).toPromise();
+}
+}
+```
+
+## Register the interceptor in the app.module.ts:
+
+```js
+// app/app.module.ts
+
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from 'src/app/shared/services/auth.interceptor.service';
+...
+
+@NgModule({
+declarations: [
+  ...
+],
+imports: [
+  ...
+],
+providers: [
+  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: AuthInterceptor,
+    multi: true
+  }
+],
+bootstrap: [AppComponent]
+})
+```
+
+## Create a login component, import and create a new instance of the Sign-In Widget:
+
+```html
+  <!-- app/login/login.component.html -->
+
+  <div id="sign-in-widget"></div>
+```
+
+```js
+// app/login/login.component.ts
+
+import * as OktaSignIn from '@okta/okta-signin-widget';
+import oktaConfig from '../okta.config';
+
+...
+
+export class LoginComponent implements OnInit {
+signIn: any;
+
+constructor() {
+  this.signIn = new OktaSignIn({
+    baseUrl: oktaConfig.issuer.split('/oauth2')[0],
+    clientId: oktaConfig.clientId,
+    redirectUri: oktaConfig.redirectUri
+    i18n: {
+      en: {
+        'primaryauth.title': 'Sign in to Go Blog App',
+      },
+    },
+    authParams: {
+      responseType: ['id_token', 'token'],
+      issuer: oktaConfig.issuer,
+      display: 'page'
+    },
+  });
+}
+
+ngOnInit() {
+  this.signIn.renderEl(
+    { el: '#sign-in-widget' },
+    () => {},
+    (err) => {
+      throw err;
+    },
+  );
+}
+}
+```
+
+## Import the OktaAuthService in the home component:
+```js
+// app/home/home.component.ts
+
+import { OktaAuthService } from '@okta/okta-angular';
+
+export class HomeComponent implements OnInit {
+isAuthenticated: boolean;
+
+constructor(public oktaAuth: OktaAuthService) {
+  this.oktaAuth.$authenticationState.subscribe(isAuthenticated => this.isAuthenticated = isAuthenticated);
+}
+
+async ngOnInit() {
+  this.isAuthenticated = await this.oktaAuth.isAuthenticated();
+}
+}
+```
+
+```html
+  <!-- app/home/home.component.html -->
+
+  <h2>
+    Welcome to Go Blog App
+  </h2>
+  <button *ngIf="!isAuthenticated"
+    color="primary"
+    routerLink="/login"
+    mat-raised-button
+    class="login-btn">LOGIN</button>
+  <button *ngIf="isAuthenticated"
+    color="primary"
+    routerLink="/posts"
+    mat-raised-button
+    class="login-btn">VIEW BLOG</button>
+```
+
+## Import and add the OktaAuthGuard to the routes which need to be protected:
+```js
+  // app/app-routing.module.ts
+
+  import { OktaCallbackComponent, OktaAuthGuard } from '@okta/okta-angular';
+
+  export function onAuthRequired({oktaAuth, router}) {
+    router.navigate(['/login']);
+  }
+
+  const routes: Routes = [
+    ...
+    {path: 'posts',
+      component: PostListComponent,
+      canActivate: [ OktaAuthGuard ],
+      data: { onAuthRequired: onAuthRequired }},
+    {path: 'posts/new',
+      component: EditPostComponent,
+      canActivate: [ OktaAuthGuard ],
+      data: { onAuthRequired: onAuthRequired }
+    },
+    {path: 'posts/edit/:id',
+      component: EditPostComponent,
+      canActivate: [ OktaAuthGuard ],
+      data: { onAuthRequired: onAuthRequired }
+    }
+  ];
+```
+
+## Development server
+
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+
+## Code scaffolding
+
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+
+## Build
+
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+
+## Further help
+
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
+:tada
